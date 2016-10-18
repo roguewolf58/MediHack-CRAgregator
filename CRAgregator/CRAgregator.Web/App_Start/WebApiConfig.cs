@@ -17,11 +17,11 @@ namespace CRAgregator.Web {
 				defaults: new { id = RouteParameter.Optional }
 			);
 
-			//config.Routes.MapHttpRoute(
-			//	name: "QueriesApi",
-			//	routeTemplate: "api/Queries/{querystate}",
-			//	defaults: new { controller = "Queries", querystate = RouteParameter.Optional}
-			//);
+			config.Routes.MapHttpRoute(
+				name: "QueriesApi",
+				routeTemplate: "api/Queries/{querystate}",
+				defaults: new { controller = "Queries", querystate = RouteParameter.Optional }
+			);
 		}
 	}
 }
