@@ -29,6 +29,7 @@ namespace AngularJSWebApiEmpty.Controllers {
 
 		public List<CountDTO> Get(QueryState querystate = QueryState.Open) {
 			var studies = new string[] { "PickettStudy1(Prod)", "Symposium-2016(Prod)" };
+			var sponsors = new string[] { "Drug, Inc.", "MedCo." };
 
 			var list = new List<CountDTO>();
 
@@ -58,16 +59,14 @@ namespace AngularJSWebApiEmpty.Controllers {
 						.Select(q => new { QueryStatus = q.Field<string>("Status"), QueryRepeatKey = q.Field<string>("QueryRepeatKey"), ID_Id = q.Field<int>("ItemData_Id") })
 						.Join(ds.Tables["ItemData"].AsEnumerable(), rslt =>rslt.ID_Id, id => id.Field<int>("ItemData_Id"),
 							(rslt, id) => new { rslt.QueryStatus, rslt.QueryRepeatKey, ItemOID = id.Field<string>("ItemOID"), ID_Id = id.Field<int>("ItemData_Id"), IGD_Id = id.Field<int>("ItemGroupData_Id") })
-						.Join(ds.Tables["AuditRecord"].AsEnumerable(), rslt => rslt.ID_Id, ar => ar.Field<int?>("ItemData_Id"),
-							(rslt, ar) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.IGD_Id, AR_Id = ar.Field<int>("AuditRecord_Id") })
-						.Join(ds.Tables["LocationRef"].AsEnumerable(), rslt => rslt.AR_Id, lr => lr.Field<int?>("AuditRecord_Id"),
-							(rslt, lr) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, SiteRef = lr.Field<string>("LocationOID"), rslt.IGD_Id})
 						.Join(ds.Tables["ItemGroupData"].AsEnumerable(), rslt => rslt.IGD_Id, igd => igd.Field<int>("ItemGroupData_Id"),
-							(rslt, igd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.SiteRef, RecordId = igd.Field<string>("RecordId"), FD_Id = igd.Field<int>("FormData_Id") })
+							(rslt, igd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, RecordId = igd.Field<string>("RecordId"), FD_Id = igd.Field<int>("FormData_Id") })
 						.Join(ds.Tables["FormData"].AsEnumerable(), rslt => rslt.FD_Id, fd => fd.Field<int>("FormData_Id"),
-							(rslt, fd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.SiteRef, rslt.RecordId, DPG_Id = fd.Field<string>("DataPageId"), SED_Id = fd.Field<int>("StudyEventData_Id") })
+							(rslt, fd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.RecordId, DPG_Id = fd.Field<string>("DataPageId"), SED_Id = fd.Field<int>("StudyEventData_Id") })
 						.Join(ds.Tables["StudyEventData"].AsEnumerable(), rslt => rslt.SED_Id, sed => sed.Field<int>("StudyEventData_Id"),
-							(rslt, sed) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.SiteRef, rslt.RecordId, rslt.DPG_Id, InsatnceId = sed.Field<string>("InstanceId"), SD_Id = sed.Field<int>("SubjectData_Id") })
+							(rslt, sed) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.RecordId, rslt.DPG_Id, InsatnceId = sed.Field<string>("InstanceId"), SD_Id = sed.Field<int>("SubjectData_Id") })
+						.Join(ds.Tables["SiteRef"].AsEnumerable(), rslt => rslt.SD_Id, sr => sr.Field<int?>("SubjectData_Id"),
+							(rslt, sr) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, SiteRef = sr.Field<string>("LocationOID"),rslt.SD_Id, rslt.RecordId, rslt.DPG_Id, rslt.InsatnceId })
 						.Join(ds.Tables["SubjectData"].AsEnumerable(), rslt => rslt.SD_Id, sd => sd.Field<int>("SubjectData_Id"),
 							(rslt, sd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.SiteRef, rslt.RecordId, rslt.DPG_Id, rslt.InsatnceId, SbjKey = sd.Field<string>("SubjectKey"), CD_Id = sd.Field<int>("ClinicalData_Id") })
 						.Join(ds.Tables["ClinicalData"].AsEnumerable(), rslt => rslt.CD_Id, cd => cd.Field<int>("ClinicalData_Id"),
@@ -135,11 +134,11 @@ namespace AngularJSWebApiEmpty.Controllers {
 					trackers.GroupBy(t => new { t.Study, t.SiteRef },
 						(key, data) => new CountDTO {
 							StudyName = key.Study,
-							SponsorName = "TODO",
+							SponsorName = sponsors[Array.IndexOf(studies,key.Study)],
 							SiteName = key.SiteRef,
 							OpenCount = data.Count(d => d.Open),
 							AnsweredCount = data.Count(d => d.Answered)
-						})
+						}).Distinct()
 						.ToList()
 						.ForEach(cdto => list.Add(cdto));
 
