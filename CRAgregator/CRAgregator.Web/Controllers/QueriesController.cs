@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -22,6 +23,7 @@ namespace AngularJSWebApiEmpty.Controllers {
 
 		public QueriesController() {
 			_nsMgr = new XmlNamespaceManager(new NameTable());
+			_nsMgr.AddNamespace(string.Empty, @"http://www.cdisc.org/ns/odm/v1.3");
 			_nsMgr.AddNamespace("mdsol", @"http://www.mdsol.com/ns/odm/metadata");
 		}
 
@@ -44,33 +46,78 @@ namespace AngularJSWebApiEmpty.Controllers {
 					var xmlDoc = new XmlDocument();
 					xmlDoc.Load(response.Content.ReadAsStreamAsync().Result);
 
-					var queryNodes = xmlDoc.SelectNodes("./ClinicalData[./SubjectData/StudyEventData/FormData/ItemGroupData/ItemData/mdsol:Query[@Recipient ='Site from CRA']]", _nsMgr);
-					foreach (XmlNode node in queryNodes) {
-						var key = string.Join(":",
-							node.Attributes["StudyOID"].Value,
-							node.SelectSingleNode("SubjectData").Attributes["SubjectKey"].Value,
-							node.SelectSingleNode("StudyEventData").Attributes["mdsol:InstanceId"].Value,
-							node.SelectSingleNode("FormData").Attributes["mdsol:DataPageId"].Value,
-							node.SelectSingleNode("ItemGroupData").Attributes["mdsol:RecordId"].Value,
-							node.SelectSingleNode("ItemData").Attributes["ItemOID"].Value,
-							node.SelectSingleNode("mdsol:Query").Attributes["QueryRepeatKey"].Value
-						);
+					DataSet ds = new DataSet();
+					XmlNodeReader xmlReader = new XmlNodeReader(xmlDoc);
+					ds.ReadXml(xmlReader);
 
-						var qryStatus = node.SelectSingleNode("mdsol:Query").Attributes["Status"].Value;
+					var queries = ds.Tables["Query"].AsEnumerable();
 
-						if (!openTracker.Any(t => t.Key.Equals(key))) openTracker.Add(new MutableKeyValuePair<string, int> { Key =key, Value = 0});
-						if (!ansTracker.Any(t => t.Key.Equals(key))) ansTracker.Add(new MutableKeyValuePair<string, int> { Key = key, Value = 0 });
+					var nodeqry = ds.Tables["Query"].AsEnumerable()
+						.Where(q => q.Field<string>("Recipient").Equals("Site from CRA"))
+						.Select(q => new { QueryStatus = q.Field<string>("Status"), QueryRepeatKey = q.Field<string>("QueryRepeatKey"), ID_Id = q.Field<int>("ItemData_Id") })
+						.Join(ds.Tables["ItemData"].AsEnumerable(), rq => rq.ID_Id, id => id.Field<int>("ItemData_Id"),
+							(rslt, id) => new { rslt.QueryStatus, rslt.QueryRepeatKey, ItemOID = id.Field<string>("ItemOID"), IGD_Id = id.Field<int>("ItemGroupData_Id") })
+						.Join(ds.Tables["ItemGroupData"].AsEnumerable(), rslt => rslt.IGD_Id, igd => igd.Field<int>("ItemGroupData_Id"),
+							(rslt, igd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, RecordId = igd.Field<string>("RecordId"), FD_Id = igd.Field<int>("FormData_Id") })
+						.Join(ds.Tables["FormData"].AsEnumerable(), rslt => rslt.FD_Id, fd => fd.Field<int>("FormData_Id"),
+							(rslt, fd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.RecordId, DPG_Id = fd.Field<string>("DataPageId"), SED_Id = fd.Field<int>("StudyEventData_Id") })
+						.Join(ds.Tables["StudyEventData"].AsEnumerable(), rslt => rslt.SED_Id, sed => sed.Field<int>("StudyEventData_Id"),
+							(rslt, sed) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.RecordId, rslt.DPG_Id, InsatnceId = sed.Field<string>("InstanceId"), SD_Id = sed.Field<int>("SubjectData_Id") })
+						.Join(ds.Tables["SubjectData"].AsEnumerable(), rslt => rslt.SD_Id, sd => sd.Field<int>("SubjectData_Id"),
+							(rslt, sd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.RecordId, rslt.DPG_Id, rslt.InsatnceId, SbjKey = sd.Field<string>("SubjectKey"), CD_Id = sd.Field<int>("ClinicalData_Id") })
+						.Join(ds.Tables["ClinicalData"].AsEnumerable(), rslt => rslt.CD_Id, cd => cd.Field<int>("ClinicalData_Id"),
+							(rslt, cd) => new QueryModel {
+								QueryStatus = rslt.QueryStatus,
+								QueryRepeatKey =  rslt.QueryRepeatKey,
+								ItemOID = rslt.ItemOID,
+								RecordID = rslt.RecordId,
+								DataPageID = rslt.DPG_Id,
+								InstanceID = rslt.InsatnceId,
+								SubjectKey =  rslt.SbjKey,
+								Study = cd.Field<string>("StudyOID")
+							});
 
-						var ot = openTracker.SingleOrDefault(t => t.Key.Equals(key));
-						var at = ansTracker.SingleOrDefault(t => t.Key.Equals(key));
 
-						switch (qryStatus) {
-							case "Open": ot .Value++; break;
-							case "Closed": ot.Value=0; at.Value = 0; break;
-							case "Answered": at.Value++; break;
-							default:
-							break;
-						}
+					//XmlNode root = xmlDoc.DocumentElement;
+
+					//foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes) {
+
+					var queryNodes = nodeqry.ToList(); // xmlDoc.SelectNodes("./ClinicalData[./SubjectData/StudyEventData/FormData/ItemGroupData/ItemData/mdsol:Query[@Recipient ='Site from CRA']]", _nsMgr);
+					for(int i =0; i< queryNodes.Count; i++) {// (var node in queryNodes) {
+						var node = queryNodes[i];
+
+						//Console.WriteLine(node.Name);
+						//try {
+						//if (node["SubjectData"]["StudyEventData"]["FormData"]["ItemGroupData"]["ItemData"]["mdsol:Query"].Attributes["Recipient"].InnerText.Contains("Site from CRA")) {
+						//This is your node
+						//var key = string.Join(":", node.Study);
+									//node.Attributes["StudyOID"].Value,
+									//node.SelectSingleNode("SubjectData").Attributes["SubjectKey"].Value,
+									//node.SelectSingleNode("StudyEventData").Attributes["mdsol:InstanceId"].Value,
+									//node.SelectSingleNode("FormData").Attributes["mdsol:DataPageId"].Value,
+									//node.SelectSingleNode("ItemGroupData").Attributes["mdsol:RecordId"].Value,
+									//node.SelectSingleNode("ItemData").Attributes["ItemOID"].Value,
+									//node.SelectSingleNode("mdsol:Query").Attributes["QueryRepeatKey"].Value
+								//);
+
+						//var qryStatus = "";// node.SelectSingleNode("mdsol:Query").Attributes["Status"].Value;
+
+								if (!openTracker.Any(t => t.Key.Equals(node.QueryKey))) openTracker.Add(new MutableKeyValuePair<string, int> { Key = node.QueryKey, Value = 0 });
+								if (!ansTracker.Any(t => t.Key.Equals(node.QueryKey))) ansTracker.Add(new MutableKeyValuePair<string, int> { Key = node.QueryKey, Value = 0 });
+
+								var ot = openTracker.SingleOrDefault(t => t.Key.Equals(node.QueryKey));
+								var at = ansTracker.SingleOrDefault(t => t.Key.Equals(node.QueryKey));
+
+								switch (node.QueryStatus) {
+									case "Open": ot.Value++; break;
+									case "Closed": ot.Value = 0; at.Value = 0; break;
+									case "Answered": at.Value++; break;
+									default:
+									break;
+								}
+							//}
+
+						//} catch { }
 					}
 
 					foreach (var kvp in openTracker) {
