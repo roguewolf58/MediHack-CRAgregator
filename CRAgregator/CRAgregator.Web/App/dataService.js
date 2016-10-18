@@ -22,7 +22,7 @@
 
         // Employee
         function getData() {
-            var url = 'API/api/Employee/Employees/';
+            var url = 'api/Queries/';
             var req = $http.get(url);
             return req;
 
