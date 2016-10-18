@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 
 namespace AngularJSWebApiEmpty.Models {
-	public class QueryModel {
+	public class AuditDTO {
 		public string QueryStatus { get; set; }
 		public string QueryRepeatKey { get; set; }
 		public string ItemOID { get; set; }
@@ -12,6 +12,7 @@ namespace AngularJSWebApiEmpty.Models {
 		public string DataPageID { get; set; }
 		public string InstanceID { get; set; }
 		public string SubjectKey { get; set; }
+		public string SiteRef { get; set; }
 		public string Study { get; set; }
 
 		public string QueryKey {

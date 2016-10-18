@@ -144,7 +144,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CountDTO.cs" />
-    <Compile Include="Models\QueryModel.cs" />
+    <Compile Include="Models\AuditDTO.cs" />
+    <Compile Include="Models\QueryTracker.cs" />
     <Compile Include="Models\StudyMetadataDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
