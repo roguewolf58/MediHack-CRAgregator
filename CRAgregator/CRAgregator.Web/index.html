@@ -18,8 +18,8 @@
     <script src="App/mainPage.js"></script>
 
     <script src="App/dataService.js"></script>
+    <script src="Scripts/Chart.js"></script>
     <script src="Scripts/angular-chart.min.js"></script>
-    <script src="Scripts/Chart.min.js"></script>
     <div data-ng-controller="MainPageList as vm">
         
         <h1>CRA Aggregator</h1>
@@ -83,9 +83,36 @@
         </table>
 
         <div>
-            <canvas id="doughnut" class="chart chart-doughnut"chart-data="data" chart-labels="labels">
-            </canvas> 
-        </div>
+            <!--<table>
+                <thead>
+                    <tr>
+                        <th>Open Queries</th>
+                        <th>Answered Queries</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>
+                        <canvas height="100" id="doughnut" class="chart chart-doughnut" chart-data="openQueriesData" chart-labels="openQueriesLabels"></canvas>
+                    </td>
+                    <td>
+                        <canvas id="doughnut" height="100" class="chart chart-doughnut" chart-data="answeredQueriesData" chart-labels="answeredQueriesLabels"></canvas>
+                    </td>
+                </tr>
+            </table>-->
+            <div class="row">
+                <span class="col-md-offset-2 col-md-4">Open Queries</span>
+                <span class="col-md-offset-2 col-md-4">Answered Queries</span>
+            </div>
+            <div class="row">
+                <div class="col-md-4 " style="height: 400px; width: 800px;">
+                    <canvas id="doughnut_open" class="chart chart-doughnut " chart-data="openQueriesData" chart-labels="openQueriesLabels"></canvas> 
+                </div>
+                <div class="col-md-4 " style="height: 400px; width: 800px;">
+                    <canvas id="doughnut_answered" class="chart chart-doughnut" chart-data="answeredQueriesData" chart-labels="answeredQueriesLabels"></canvas>
+                <div>
+            </div>
+
+            </div>
     </div>
     
 </body>
