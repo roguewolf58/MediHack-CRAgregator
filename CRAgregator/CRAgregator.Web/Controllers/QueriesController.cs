@@ -58,9 +58,9 @@ namespace AngularJSWebApiEmpty.Controllers {
 						.Select(q => new { QueryStatus = q.Field<string>("Status"), QueryRepeatKey = q.Field<string>("QueryRepeatKey"), ID_Id = q.Field<int>("ItemData_Id") })
 						.Join(ds.Tables["ItemData"].AsEnumerable(), rslt =>rslt.ID_Id, id => id.Field<int>("ItemData_Id"),
 							(rslt, id) => new { rslt.QueryStatus, rslt.QueryRepeatKey, ItemOID = id.Field<string>("ItemOID"), ID_Id = id.Field<int>("ItemData_Id"), IGD_Id = id.Field<int>("ItemGroupData_Id") })
-						.Join(ds.Tables["AuditRecord"].AsEnumerable(), rslt => rslt.ID_Id, ar => ar.Field<int>("ItemData_Id"),
+						.Join(ds.Tables["AuditRecord"].AsEnumerable(), rslt => rslt.ID_Id, ar => ar.Field<int?>("ItemData_Id"),
 							(rslt, ar) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.IGD_Id, AR_Id = ar.Field<int>("AuditRecord_Id") })
-						.Join(ds.Tables["LocationRef"].AsEnumerable(), rslt => rslt.AR_Id, lr => lr.Field<int>("AuditRecord_Id"),
+						.Join(ds.Tables["LocationRef"].AsEnumerable(), rslt => rslt.AR_Id, lr => lr.Field<int?>("AuditRecord_Id"),
 							(rslt, lr) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, SiteRef = lr.Field<string>("LocationOID"), rslt.IGD_Id})
 						.Join(ds.Tables["ItemGroupData"].AsEnumerable(), rslt => rslt.IGD_Id, igd => igd.Field<int>("ItemGroupData_Id"),
 							(rslt, igd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.SiteRef, RecordId = igd.Field<string>("RecordId"), FD_Id = igd.Field<int>("FormData_Id") })
