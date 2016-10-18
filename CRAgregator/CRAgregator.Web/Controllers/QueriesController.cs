@@ -131,16 +131,19 @@ namespace AngularJSWebApiEmpty.Controllers {
 					}
 
 					//-- Group to the site
-					trackers.GroupBy(t => new { t.Study, t.SiteRef },
+					var groupedData = trackers.GroupBy(t => new { t.Study, t.SiteRef },
 						(key, data) => new CountDTO {
 							StudyName = key.Study,
-							SponsorName = sponsors[Array.IndexOf(studies,key.Study)],
+							SponsorName = sponsors[Array.IndexOf(studies, key.Study)],
 							SiteName = key.SiteRef,
 							OpenCount = data.Count(d => d.Open),
 							AnsweredCount = data.Count(d => d.Answered)
-						}).Distinct()
-						.ToList()
-						.ForEach(cdto => list.Add(cdto));
+						}).ToList();
+
+
+					foreach (var item in groupedData) {
+						if (!list.Any(l => l.StudyName.Equals(item.StudyName) && l.SiteName.Equals(item.SiteName))) list.Add(item);
+					}
 
 					//foreach (var kvp in openTracker) {
 					//	var kAry = kvp.Key.Split(':');
