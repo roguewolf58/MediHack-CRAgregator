@@ -73,11 +73,11 @@
             </thead>
             <tbody ng-form="vm.tableForm">
                 <tr ng-repeat="row in vm.rowCollection | orderBy:vm.sortType:vm.sortReverse | filter:vm.searchTable">
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;"><span ng-click="vm.itemClicked(row.Sponsor)">{{row.Sponsor}}</span></td>
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;">{{row.Study}}</td>
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;">{{row.Site}}</td>
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;">{{row.OpenQueries}}</td>
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;">{{row.AnsweredQueries}}</td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;"><span style="cursor: pointer;" ng-click="vm.itemClicked(row.Sponsor, 'Sponsor')">{{row.Sponsor}}</span></td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;"><span style="cursor: pointer;" ng-click="vm.itemClicked(row.Study, 'Study')">{{row.Study}}</span></td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;"><span style="cursor: pointer;" ng-click="vm.itemClicked(row.Site, 'Site')">{{row.Site}}</span></td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;"><span style="cursor: pointer;">{{row.OpenQueries}}</span></td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;"><span style="cursor: pointer;">{{row.AnsweredQueries}}</span></td>
                 </tr>
             </tbody>
         </table>

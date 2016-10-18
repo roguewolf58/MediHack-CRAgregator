@@ -36,7 +36,7 @@
                 { Sponsor: 'Sponsor2', Study: 'Study4', Site: 'Site4', OpenQueries: 3, AnsweredQueries: 8 },
                 { Sponsor: 'Sponsor3', Study: 'Study5', Site: 'Site5', OpenQueries: 1, AnsweredQueries: 3 },
                 { Sponsor: 'Sponsor3', Study: 'Study6', Site: 'Site6', OpenQueries: 2, AnsweredQueries: 2 },
-                { Sponsor: 'Sponsor4', Study: 'Study7', Site: 'Site7', OpenQueries: 5, AnsweredQueries: 5 }
+                { Sponsor: 'Sponsor4', Study: 'Study7', Site: 'Site1', OpenQueries: 5, AnsweredQueries: 5 }
             ]};
             return $q.when(testData);
         }
