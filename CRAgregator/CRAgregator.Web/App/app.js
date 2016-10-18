@@ -7,9 +7,9 @@
         'ngRoute',
 
         // Custom modules
-        'common'
+        'common',
 
         // 3rd Party Modules
-        
+        'chart.js'
     ]);
 })();

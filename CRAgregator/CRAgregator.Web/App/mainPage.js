@@ -7,6 +7,9 @@
         //var getLogFn = common.logger.getLogFn;
         //var log = getLogFn(controllerId);
 
+        vm.lables = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
+        vm.data = [300, 500, 100];
+
         var vm = this;
         vm.title = 'Programs';
         vm.rowCollection = [];

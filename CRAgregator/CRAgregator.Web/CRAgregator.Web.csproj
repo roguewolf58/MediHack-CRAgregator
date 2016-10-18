@@ -93,6 +93,7 @@
     <Content Include="index.html" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
+    <Content Include="Scripts\angular-chart.js" />
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular-route.js" />
     <Content Include="Scripts\angular-route.min.js" />
@@ -111,9 +112,13 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="Scripts\angular-chart.min.js" />
+    <Content Include="Scripts\angular-chart.min.js.map" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Chart.js" />
+    <Content Include="Scripts\Chart.min.js" />
     <Content Include="Scripts\jquery-1.9.1.js" />
     <Content Include="Scripts\jquery-1.9.1.min.js" />
     <Content Include="Web.config" />

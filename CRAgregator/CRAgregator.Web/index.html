@@ -18,7 +18,8 @@
     <script src="App/mainPage.js"></script>
 
     <script src="App/dataService.js"></script>
-
+    <script src="Scripts/angular-chart.min.js"></script>
+    <script src="Scripts/Chart.min.js"></script>
     <div data-ng-controller="MainPageList as vm">
         
         <h1>CRA Aggregator</h1>
@@ -80,6 +81,11 @@
                 </tr>
             </tbody>
         </table>
+
+        <div>
+            <canvas id="doughnut" class="chart chart-doughnut"chart-data="data" chart-labels="labels">
+            </canvas> 
+        </div>
     </div>
     
 </body>
