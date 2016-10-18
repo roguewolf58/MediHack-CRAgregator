@@ -28,6 +28,12 @@
             vm.searchTable = vm.searchTable2;
             document.getElementById("inputSearch").select();
         };
+
+        vm.itemClicked = function (item) {
+            vm.searchTable2 = item;
+            vm.searchClick();
+        };
+
         vm.formClick = function () {
             vm.showError = false;
         };
