@@ -16,15 +16,23 @@ namespace AngularJSWebApiEmpty.Controllers {
 		public TValue Value { get; set; }
 	}
 
+	public class SiteDTO {
+		public string SiteOID { get; set; }
+		public string SiteName { get; set; }
+	}
+
 	public class QueriesController : ApiController {
 		private string _usr {get; set;} = "defuser";
 		private string _pwd {get; set;} = "password";
 		private XmlNamespaceManager _nsMgr;
+		private AuthenticationHeaderValue _authHdr;
 
 		public QueriesController() {
 			_nsMgr = new XmlNamespaceManager(new NameTable());
 			_nsMgr.AddNamespace(string.Empty, @"http://www.cdisc.org/ns/odm/v1.3");
 			_nsMgr.AddNamespace("mdsol", @"http://www.mdsol.com/ns/odm/metadata");
+
+			_authHdr = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", _usr, _pwd))));
 		}
 
 		public List<CountDTO> Get(QueryState querystate = QueryState.Open) {
@@ -40,9 +48,25 @@ namespace AngularJSWebApiEmpty.Controllers {
 			var trackers = new List<QueryTracker>();
 
 			foreach (var stOID in studies) {
+				var SiteNames = new Dictionary<string, string>();
+
+				using (var client = new HttpClient()) {
+					client.DefaultRequestHeaders.Authorization = _authHdr;
+					var response = client.GetAsync(String.Format(@"https://hackathon2.mdsol.com/RaveWebServices/datasets/Sites.odm?studyoid={0}", stOID)).Result;
+
+					var xmlDoc = new XmlDocument();
+					xmlDoc.Load(response.Content.ReadAsStreamAsync().Result);
+
+					DataSet ds = new DataSet();
+					XmlNodeReader xmlReader = new XmlNodeReader(xmlDoc);
+					ds.ReadXml(xmlReader);
+
+					SiteNames = ds.Tables["Location"].AsEnumerable().ToDictionary(k => k.Field<string>("OID"), v => v.Field<string>("Name"));
+						
+				}
 				//-- get list of open queries
 				using (var client = new HttpClient()) {
-					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", _usr, _pwd))));
+					client.DefaultRequestHeaders.Authorization = _authHdr ;
 					var response = client.GetAsync(String.Format(@"https://hackathon2.mdsol.com/RaveWebServices/datasets/ClinicalAuditRecords.odm?studyoid={0}", stOID)).Result;
 
 					var xmlDoc = new XmlDocument();
@@ -57,7 +81,7 @@ namespace AngularJSWebApiEmpty.Controllers {
 					var nodeqry = ds.Tables["Query"].AsEnumerable()
 						.Where(q => q.Field<string>("Recipient").Equals("Site from CRA"))
 						.Select(q => new { QueryStatus = q.Field<string>("Status"), QueryRepeatKey = q.Field<string>("QueryRepeatKey"), ID_Id = q.Field<int>("ItemData_Id") })
-						.Join(ds.Tables["ItemData"].AsEnumerable(), rslt =>rslt.ID_Id, id => id.Field<int>("ItemData_Id"),
+						.Join(ds.Tables["ItemData"].AsEnumerable(), rslt => rslt.ID_Id, id => id.Field<int>("ItemData_Id"),
 							(rslt, id) => new { rslt.QueryStatus, rslt.QueryRepeatKey, ItemOID = id.Field<string>("ItemOID"), ID_Id = id.Field<int>("ItemData_Id"), IGD_Id = id.Field<int>("ItemGroupData_Id") })
 						.Join(ds.Tables["ItemGroupData"].AsEnumerable(), rslt => rslt.IGD_Id, igd => igd.Field<int>("ItemGroupData_Id"),
 							(rslt, igd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, RecordId = igd.Field<string>("RecordId"), FD_Id = igd.Field<int>("FormData_Id") })
@@ -66,19 +90,19 @@ namespace AngularJSWebApiEmpty.Controllers {
 						.Join(ds.Tables["StudyEventData"].AsEnumerable(), rslt => rslt.SED_Id, sed => sed.Field<int>("StudyEventData_Id"),
 							(rslt, sed) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.RecordId, rslt.DPG_Id, InsatnceId = sed.Field<string>("InstanceId"), SD_Id = sed.Field<int>("SubjectData_Id") })
 						.Join(ds.Tables["SiteRef"].AsEnumerable(), rslt => rslt.SD_Id, sr => sr.Field<int?>("SubjectData_Id"),
-							(rslt, sr) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, SiteRef = sr.Field<string>("LocationOID"),rslt.SD_Id, rslt.RecordId, rslt.DPG_Id, rslt.InsatnceId })
+							(rslt, sr) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, SiteRef = sr.Field<string>("LocationOID"), rslt.SD_Id, rslt.RecordId, rslt.DPG_Id, rslt.InsatnceId })
 						.Join(ds.Tables["SubjectData"].AsEnumerable(), rslt => rslt.SD_Id, sd => sd.Field<int>("SubjectData_Id"),
 							(rslt, sd) => new { rslt.QueryStatus, rslt.QueryRepeatKey, rslt.ItemOID, rslt.SiteRef, rslt.RecordId, rslt.DPG_Id, rslt.InsatnceId, SbjKey = sd.Field<string>("SubjectKey"), CD_Id = sd.Field<int>("ClinicalData_Id") })
 						.Join(ds.Tables["ClinicalData"].AsEnumerable(), rslt => rslt.CD_Id, cd => cd.Field<int>("ClinicalData_Id"),
 							(rslt, cd) => new AuditDTO {
 								QueryStatus = rslt.QueryStatus,
-								QueryRepeatKey =  rslt.QueryRepeatKey,
+								QueryRepeatKey = rslt.QueryRepeatKey,
 								SiteRef = rslt.SiteRef,
 								ItemOID = rslt.ItemOID,
 								RecordID = rslt.RecordId,
 								DataPageID = rslt.DPG_Id,
 								InstanceID = rslt.InsatnceId,
-								SubjectKey =  rslt.SbjKey,
+								SubjectKey = rslt.SbjKey,
 								Study = cd.Field<string>("StudyOID")
 							});
 
@@ -88,7 +112,7 @@ namespace AngularJSWebApiEmpty.Controllers {
 					//foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes) {
 
 					var queryNodes = nodeqry.ToList(); // xmlDoc.SelectNodes("./ClinicalData[./SubjectData/StudyEventData/FormData/ItemGroupData/ItemData/mdsol:Query[@Recipient ='Site from CRA']]", _nsMgr);
-					for(int i =0; i< queryNodes.Count; i++) {// (var node in queryNodes) {
+					for (int i = 0; i < queryNodes.Count; i++) {// (var node in queryNodes) {
 						var node = queryNodes[i];
 
 						//Console.WriteLine(node.Name);
@@ -118,30 +142,38 @@ namespace AngularJSWebApiEmpty.Controllers {
 						if (!trackers.Any(t => t.UniqueID.Equals(node.QueryKey))) trackers.Add(new QueryTracker { Study = node.Study, SiteRef = node.SiteRef, UniqueID = node.QueryKey });
 						var ct = trackers.SingleOrDefault(t => t.UniqueID.Equals(node.QueryKey));
 
-								switch (node.QueryStatus) {
-									case "Open": ct.Open = true; ct.Answered = false; break;
-									case "Closed": ct.Open = false; ct.Answered = false; break;
-									case "Answered": ct.Open = false; ct.Answered = true; break;
-									default:
-									break;
-								}
-							//}
+						switch (node.QueryStatus) {
+							case "Open": ct.Open = true; ct.Answered = false; break;
+							case "Closed": ct.Open = false; ct.Answered = false; break;
+							case "Answered": ct.Open = false; ct.Answered = true; break;
+							default:
+							break;
+						}
+						//}
 
 						//} catch { }
 					}
 
 					//-- Group to the site
-					var groupedData = trackers.GroupBy(t => new { t.Study, t.SiteRef },
-						(key, data) => new CountDTO {
-							StudyName = key.Study,
-							SponsorName = sponsors[Array.IndexOf(studies, key.Study)],
-							SiteName = key.SiteRef,
-							OpenCount = data.Count(d => d.Open),
-							AnsweredCount = data.Count(d => d.Answered)
-						}).ToList();
+					var groupedData = trackers.GroupBy(t => new { t.Study, t.SiteRef });//,
+						//(key, data) => new CountDTO {
+						//	StudyName = key.Study,
+						//	SponsorName = sponsors[Array.IndexOf(studies, key.Study)],
+						//	SiteName = SiteNames[key.SiteRef],
+						//	OpenCount = data.Count(d => d.Open),
+						//	AnsweredCount = data.Count(d => d.Answered)
+						/*})*/
+					var groupedData1 = groupedData.Select(gd => new CountDTO {
+							StudyName = gd.Key.Study,
+							SponsorName = sponsors[Array.IndexOf(studies, gd.Key.Study)],
+							SiteName = SiteNames.DefaultIfEmpty(new KeyValuePair<string,string>("d-"+gd.Key.SiteRef, gd.Key.SiteRef)).SingleOrDefault(s => s.Key.Equals(gd.Key.SiteRef)).Value,
+							OpenCount = gd.Count(d => d.Open),
+							AnsweredCount = gd.Count(d => d.Answered)
+					})	
+					.ToList();
 
 
-					foreach (var item in groupedData) {
+					foreach (var item in groupedData1) {
 						if (!list.Any(l => l.StudyName.Equals(item.StudyName) && l.SiteName.Equals(item.SiteName))) list.Add(item);
 					}
 
