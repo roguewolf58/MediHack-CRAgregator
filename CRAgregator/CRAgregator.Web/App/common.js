@@ -25,9 +25,9 @@
     });
 
     commonModule.factory('common',
-        ['$q', '$rootScope', '$timeout', '$window', 'commonConfig', 'logger', 'userinfo', 'roleinfo', common]);
+        ['$q', '$rootScope', '$timeout', '$window', 'commonConfig', common]);
 
-    function common($q, $rootScope, $timeout, $window, commonConfig, logger, userinfo, roleinfo) {
+    function common($q, $rootScope, $timeout, $window, commonConfig) {
         var throttles = {};
 
         var service = {
@@ -40,10 +40,8 @@
             createSearchThrottle: createSearchThrottle,
             debouncedThrottle: debouncedThrottle,
             isNumber: isNumber,
-            logger: logger, // for accessibility
+            //logger: logger, // for accessibility
             textContains: textContains,
-            userinfo: userinfo,
-            roleinfo: roleinfo,
             commonConfig: commonConfig
         };
 

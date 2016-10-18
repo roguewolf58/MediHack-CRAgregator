@@ -2,66 +2,85 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
+    <link href="Content/font-awesome.min.css" rel="stylesheet" />
+    <link href="Content/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body ng-app="app">
+    <script src="Scripts/jquery-1.9.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
     <script src="Scripts/angular.js"></script>
     <script src="Scripts/angular-animate.js"></script>
     <script src="Scripts/angular-route.js"></script>
     <script src="App/app.js"></script>
+    <script src="App/config.js"></script>
+    <script src="App/common.js"></script>
+    <script src="App/mainPage.js"></script>
 
-    <h1>CRA Aggregator</h1>
-    <br />
-    <div ng-show="vm.loading"><h2><i class="fa fa-spinner fa-spin"></i> Loading</h2></div>
-    <table class="table table-bordered table-striped" ng-show="!vm.loading">
-        <thead>
-            <tr>
-                <th>
-                    <a href="#" ng-click="vm.sortType = 'Sponsor'; vm.sortReverse = !vm.sortReverse">
-                        Sponsor
-                        <span ng-show="vm.sortType == 'Sponsor' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                        <span ng-show="vm.sortType == 'Sponsor' && vm.sortReverse" class="fa fa-caret-up"></span>
-                    </a>
-                </th>
-                <th>
-                    <a href="#" ng-click="vm.sortType = 'Study'; vm.sortReverse = !vm.sortReverse">
-                        Study
-                        <span ng-show="vm.sortType == 'Study' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                        <span ng-show="vm.sortType == 'Study' && vm.sortReverse" class="fa fa-caret-up"></span>
-                    </a>
-                </th>
-                <th>
-                    <a href="#" ng-click="vm.sortType = 'Site'; vm.sortReverse = !vm.sortReverse">
-                        Site
-                        <span ng-show="vm.sortType == 'Site' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                        <span ng-show="vm.sortType == 'Site' && vm.sortReverse" class="fa fa-caret-up"></span>
-                    </a>
-                </th>
-                <th>
-                    <a href="#" ng-click="vm.sortType = 'OpenQueries'; vm.sortReverse = !vm.sortReverse">
-                        OpenQueries
-                        <span ng-show="vm.sortType == 'OpenQueries' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                        <span ng-show="vm.sortType == 'OpenQueries' && vm.sortReverse" class="fa fa-caret-up"></span>
-                    </a>
-                </th>
-                <th>
-                    <a href="#" ng-click="vm.sortType = 'AnsweredQueries'; vm.sortReverse = !vm.sortReverse">
-                        AnsweredQueries
-                        <span ng-show="vm.sortType == 'AnsweredQueries' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                        <span ng-show="vm.sortType == 'AnsweredQueries' && vm.sortReverse" class="fa fa-caret-up"></span>
-                    </a>
-                </th>
-            </tr>
-        </thead>
-        <tbody ng-form="vm.tableForm">
-            <tr ng-repeat="row in vm.rowCollection | orderBy:vm.sortType:vm.sortReverse | filter:vm.searchTable track by row.Id">
-                <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;">{{row.Sponsor}}</td>
-                <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;">{{row.Study}}</td>
-                <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;">{{row.Site}}</td>
-                <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;">{{row.OpenQueries}}</td>
-                <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;">{{row.AnsweredQueries}}</td>
-            </tr>
-        </tbody>
-    </table>
+    <script src="App/dataService.js"></script>
+
+    <div data-ng-controller="MainPageList as vm">
+        
+        <h1>CRA Aggregator</h1>
+        <br />
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon" ng-click="vm.searchClick()"><i class="fa fa-search"></i></div>
+                <input type="text" id="inputSearch" class="form-control" placeholder="Search" ng-model="vm.searchTable2" ng-keyup="$event.keyCode == 13 && vm.searchClick()">
+            </div>
+        </div>
+        <div ng-show="vm.loading"><h2><i class="fa fa-spinner fa-spin"></i> Loading</h2></div>
+        <table class="table table-bordered table-striped" ng-show="!vm.loading">
+            <thead>
+                <tr>
+                    <th>
+                        <a href="#" ng-click="vm.sortType = 'Sponsor'; vm.sortReverse = !vm.sortReverse">
+                            Sponsor
+                            <span ng-show="vm.sortType == 'Sponsor' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'Sponsor' && vm.sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="#" ng-click="vm.sortType = 'Study'; vm.sortReverse = !vm.sortReverse">
+                            Study
+                            <span ng-show="vm.sortType == 'Study' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'Study' && vm.sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="#" ng-click="vm.sortType = 'Site'; vm.sortReverse = !vm.sortReverse">
+                            Site
+                            <span ng-show="vm.sortType == 'Site' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'Site' && vm.sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="#" ng-click="vm.sortType = 'OpenQueries'; vm.sortReverse = !vm.sortReverse">
+                            OpenQueries
+                            <span ng-show="vm.sortType == 'OpenQueries' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'OpenQueries' && vm.sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="#" ng-click="vm.sortType = 'AnsweredQueries'; vm.sortReverse = !vm.sortReverse">
+                            AnsweredQueries
+                            <span ng-show="vm.sortType == 'AnsweredQueries' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'AnsweredQueries' && vm.sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody ng-form="vm.tableForm">
+                <tr ng-repeat="row in vm.rowCollection | orderBy:vm.sortType:vm.sortReverse | filter:vm.searchTable">
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;">{{row.Sponsor}}</td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;">{{row.Study}}</td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;">{{row.Site}}</td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;">{{row.OpenQueries}}</td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;">{{row.AnsweredQueries}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     
 </body>
 </html>

@@ -14,7 +14,8 @@
         var service = {
             getSearchText: function () { return data.SearchText; },
             setSearchText: function (searchText) { data.SearchText = searchText; },
-            getData: getData
+            getData: getData,
+            getTestData: getTestData
         };
 
         return service;
@@ -28,7 +29,7 @@
         }
 
         function getTestData() {
-            var people = [
+            var testData = { data : [
                 { Sponsor: 'Sponsor1', Study: 'Study1', Site: 'Site1', OpenQueries: 5, AnsweredQueries: 6 },
                 { Sponsor: 'Sponsor2', Study: 'Study1', Site: 'Site1', OpenQueries: 5, AnsweredQueries: 6 },
                 { Sponsor: 'Sponsor2', Study: 'Study1', Site: 'Site1', OpenQueries: 5, AnsweredQueries: 6 },
@@ -36,8 +37,8 @@
                 { Sponsor: 'Sponsor3', Study: 'Study1', Site: 'Site1', OpenQueries: 5, AnsweredQueries: 6 },
                 { Sponsor: 'Sponsor3', Study: 'Study1', Site: 'Site1', OpenQueries: 5, AnsweredQueries: 6 },
                 { Sponsor: 'Sponsor4', Study: 'Study1', Site: 'Site1', OpenQueries: 5, AnsweredQueries: 6 }
-            ];
-            return $q.when(people);
+            ]};
+            return $q.when(testData);
         }
 
     }
