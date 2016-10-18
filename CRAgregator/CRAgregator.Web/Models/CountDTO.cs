@@ -12,6 +12,7 @@ namespace AngularJSWebApiEmpty.Models {
 		public string StudyName { get; set; }
 		public string SiteName { get; set; }
 
-		public long Count { get; set; }
+		public long OpenCount { get; set; }
+		public long AnsweredCount { get; set; }
 	}
 }
