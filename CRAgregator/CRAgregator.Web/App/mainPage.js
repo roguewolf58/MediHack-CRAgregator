@@ -61,33 +61,33 @@
             $scope.openQueriesLabels = [];
             $scope.openQueriesData = [];
             for (var i = 0; i < vm.rowCollection2.length; i++) {
-                var b = $scope.openQueriesLabels.indexOf(vm.rowCollection2[i].Site);
+                var b = $scope.openQueriesLabels.indexOf(vm.rowCollection2[i].SiteName);
                 if (b == -1) {
-                    $scope.openQueriesLabels.push(vm.rowCollection2[i].Site);
-                    $scope.openQueriesData.push(vm.rowCollection2[i].OpenQueries);
+                    $scope.openQueriesLabels.push(vm.rowCollection2[i].SiteName);
+                    $scope.openQueriesData.push(vm.rowCollection2[i].OpenCount);
                 }
                 else {
-                    $scope.openQueriesData[b] += vm.rowCollection2[i].OpenQueries;
+                    $scope.openQueriesData[b] += vm.rowCollection2[i].OpenCount;
                 }
             }
 
             $scope.answeredQueriesLabels = [];
             $scope.answeredQueriesData = [];
             for (var i = 0; i < vm.rowCollection2.length; i++) {
-                var b = $scope.answeredQueriesLabels.indexOf(vm.rowCollection2[i].Site);
+                var b = $scope.answeredQueriesLabels.indexOf(vm.rowCollection2[i].SiteName);
                 if (b == -1) {
-                    $scope.answeredQueriesLabels.push(vm.rowCollection2[i].Site);
-                    $scope.answeredQueriesData.push(vm.rowCollection2[i].AnsweredQueries);
+                    $scope.answeredQueriesLabels.push(vm.rowCollection2[i].SiteName);
+                    $scope.answeredQueriesData.push(vm.rowCollection2[i].AnsweredCount);
                 }
                 else {
-                    $scope.answeredQueriesData[b] += vm.rowCollection2[i].AnsweredQueries;
+                    $scope.answeredQueriesData[b] += vm.rowCollection2[i].AnsweredCount;
                 }
             }
         }
 
         function getRowCollection() {
             vm.loading = true;
-            var promiseGet = dataService.getTestData();
+            var promiseGet = dataService.getData();
             return promiseGet.then(function (result) {
                 vm.rowCollection = result.data;
                 setChartData();

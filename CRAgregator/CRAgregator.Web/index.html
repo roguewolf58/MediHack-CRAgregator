@@ -20,9 +20,9 @@
     <script src="App/dataService.js"></script>
     <script src="Scripts/Chart.js"></script>
     <script src="Scripts/angular-chart.min.js"></script>
-    <div data-ng-controller="MainPageList as vm">
+    <div data-ng-controller="MainPageList as vm" style="padding-left: 10px">
         
-        <h1>Tskr</h1>
+        <h1>tskr</h1>
         <br />
         <div class="form-group">
             <div class="input-group">
@@ -35,49 +35,49 @@
             <thead>
                 <tr>
                     <th>
-                        <a href="#" ng-click="vm.sortType = 'Sponsor'; vm.sortReverse = !vm.sortReverse">
+                        <a href="#" ng-click="vm.sortType = 'SponsorName'; vm.sortReverse = !vm.sortReverse">
                             Sponsor
-                            <span ng-show="vm.sortType == 'Sponsor' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                            <span ng-show="vm.sortType == 'Sponsor' && vm.sortReverse" class="fa fa-caret-up"></span>
+                            <span ng-show="vm.sortType == 'SponsorName' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'SponsorName' && vm.sortReverse" class="fa fa-caret-up"></span>
                         </a>
                     </th>
                     <th>
-                        <a href="#" ng-click="vm.sortType = 'Study'; vm.sortReverse = !vm.sortReverse">
+                        <a href="#" ng-click="vm.sortType = 'StudyName'; vm.sortReverse = !vm.sortReverse">
                             Study
-                            <span ng-show="vm.sortType == 'Study' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                            <span ng-show="vm.sortType == 'Study' && vm.sortReverse" class="fa fa-caret-up"></span>
+                            <span ng-show="vm.sortType == 'StudyName' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'StudyName' && vm.sortReverse" class="fa fa-caret-up"></span>
                         </a>
                     </th>
                     <th>
-                        <a href="#" ng-click="vm.sortType = 'Site'; vm.sortReverse = !vm.sortReverse">
+                        <a href="#" ng-click="vm.sortType = 'SiteName'; vm.sortReverse = !vm.sortReverse">
                             Site
-                            <span ng-show="vm.sortType == 'Site' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                            <span ng-show="vm.sortType == 'Site' && vm.sortReverse" class="fa fa-caret-up"></span>
+                            <span ng-show="vm.sortType == 'SiteName' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'SiteName' && vm.sortReverse" class="fa fa-caret-up"></span>
                         </a>
                     </th>
                     <th>
-                        <a href="#" ng-click="vm.sortType = 'OpenQueries'; vm.sortReverse = !vm.sortReverse">
+                        <a href="#" ng-click="vm.sortType = 'OpenCount'; vm.sortReverse = !vm.sortReverse">
                             OpenQueries
-                            <span ng-show="vm.sortType == 'OpenQueries' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                            <span ng-show="vm.sortType == 'OpenQueries' && vm.sortReverse" class="fa fa-caret-up"></span>
+                            <span ng-show="vm.sortType == 'OpenCount' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'OpenCount' && vm.sortReverse" class="fa fa-caret-up"></span>
                         </a>
                     </th>
                     <th>
-                        <a href="#" ng-click="vm.sortType = 'AnsweredQueries'; vm.sortReverse = !vm.sortReverse">
+                        <a href="#" ng-click="vm.sortType = 'AnsweredCount'; vm.sortReverse = !vm.sortReverse">
                             AnsweredQueries
-                            <span ng-show="vm.sortType == 'AnsweredQueries' && !vm.sortReverse" class="fa fa-caret-down"></span>
-                            <span ng-show="vm.sortType == 'AnsweredQueries' && vm.sortReverse" class="fa fa-caret-up"></span>
+                            <span ng-show="vm.sortType == 'AnsweredCount' && !vm.sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="vm.sortType == 'AnsweredCount' && vm.sortReverse" class="fa fa-caret-up"></span>
                         </a>
                     </th>
                 </tr>
             </thead>
             <tbody ng-form="vm.tableForm">
                 <tr ng-repeat="row in vm.rowCollection | orderBy:vm.sortType:vm.sortReverse | filter:vm.searchTable">
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;"><span style="cursor: pointer;" ng-click="vm.itemClicked(row.Sponsor, 'Sponsor')">{{row.Sponsor}}</span></td>
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;"><span style="cursor: pointer;" ng-click="vm.itemClicked(row.Study, 'Study')">{{row.Study}}</span></td>
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;"><span style="cursor: pointer;" ng-click="vm.itemClicked(row.Site, 'Site')">{{row.Site}}</span></td>
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;"><span style="cursor: pointer;">{{row.OpenQueries}}</span></td>
-                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;"><span style="cursor: pointer;">{{row.AnsweredQueries}}</span></td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;"><span style="cursor: pointer;" ng-click="vm.itemClicked(row.SponsorName, 'Sponsor')">{{row.SponsorName}}</span></td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 400px; white-space:normal;"><span style="cursor: pointer;" ng-click="vm.itemClicked(row.StudyName, 'Study')">{{row.StudyName}}</span></td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;"><span style="cursor: pointer;" ng-click="vm.itemClicked(row.SiteName, 'Site')">{{row.SiteName}}</span></td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;"><span style="cursor: pointer;">{{row.OpenCount}}</span></td>
+                    <td style="word-wrap: break-word;min-width: 0px;max-width: 100px; white-space:normal;"><span style="cursor: pointer;">{{row.AnsweredCount}}</span></td>
                 </tr>
             </tbody>
         </table>
@@ -98,6 +98,6 @@
 
             </div>
         </div>
-    
+    </div>
 </body>
 </html>
